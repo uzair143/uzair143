@@ -1,38 +1,48 @@
-<?php
-//including the database connection file
-include_once("config.php");
+<?php 
+	session_start(); 
 
-//fetching data in descending order (lastest entry first)
-//$result = mysql_query("SELECT * FROM users ORDER BY id DESC"); // mysql_query is deprecated
-$result = mysqli_query($mysqli, "SELECT * FROM users ORDER BY id DESC"); // using mysqli_query instead
-?>
-
-<html>
-<head>	
-	<title>Homepage</title>
-</head>
-
-<body>
-<a href="add.html">Add New Data</a><br/><br/>
-
-	<table width='80%' border=0>
-
-	<tr bgcolor='#CCCCCC'>
-		<td>Name</td>
-		<td>Age</td>
-		<td>Email</td>
-		<td>Update</td>
-	</tr>
-	<?php 
-	//while($res = mysql_fetch_array($result)) { // mysql_fetch_array is deprecated, we need to use mysqli_fetch_array 
-	while($res = mysqli_fetch_array($result)) { 		
-		echo "<tr>";
-		echo "<td>".$res['name']."</td>";
-		echo "<td>".$res['age']."</td>";
-		echo "<td>".$res['email']."</td>";	
-		echo "<td><a href=\"edit.php?id=$res[id]\">Edit</a> | <a href=\"delete.php?id=$res[id]\" onClick=\"return confirm('Are you sure you want to delete?')\">Delete</a></td>";		
+	if (!isset($_SESSION['username'])) {
+		$_SESSION['msg'] = "You must log in first";
+		header('location: login.php');
 	}
-	?>
-	</table>
+
+	if (isset($_GET['logout'])) {
+		session_destroy();
+		unset($_SESSION['username']);
+		header("location: login.php");
+	}
+
+?>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Home</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div class="header">
+		<h2>Home Page</h2>
+	</div>
+	<div class="content">
+
+		<!-- notification message -->
+		<?php if (isset($_SESSION['success'])) : ?>
+			<div class="error success" >
+				<h3>
+					<?php 
+						echo $_SESSION['success']; 
+						unset($_SESSION['success']);
+					?>
+				</h3>
+			</div>
+		<?php endif ?>
+
+		<!-- logged in user information -->
+		<?php  if (isset($_SESSION['username'])) : ?>
+			<p>Welcome <strong><?php echo $_SESSION['username']; ?></strong></p>
+			<p> <a href="index.php?logout='1'" style="color: red;">logout</a> </p>
+		<?php endif ?>
+	</div>
+		
 </body>
 </html>
