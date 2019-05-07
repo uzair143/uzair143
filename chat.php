@@ -1,6 +1,11 @@
 <?php
 session_start();
-require 'actions/db.php'
+require 'actions/db.php';
+if(isset($_SESSION['is_login']))
+{
+	$res=query("select * from msg where m_to='{$_SESSION['u_id']}' or m_from='{$_SESSION['u_id']}' order by m_id desc");
+
+
 ?>
 
 <!--
@@ -12,7 +17,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <!DOCTYPE html>
 <html>
 <head>
-<title>Big store a Ecommerce Online Shopping Category Flat Bootstrap Responsive Website Template | Login :: w3layouts</title>
+<title>Big store a Ecommerce Online Shopping Category Flat Bootstrap Responsive Website Template | About :: w3layouts</title>
 <!-- for-mobile-apps -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -24,6 +29,8 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 <!-- //for-mobile-apps -->
 <link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
 <!-- Custom Theme files -->
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 <link href="css/style.css" rel='stylesheet' type='text/css' />
 <!-- js -->
    <script src="js/jquery-1.11.1.min.js"></script>
@@ -46,6 +53,14 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 <!--- start-rate---->
 <script src="js/jstarbox.js"></script>
 	<link rel="stylesheet" href="css/jstarbox.css" type="text/css" media="screen" charset="utf-8" />
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
+	<script>
+		$(document).ready(function() {
+    $('#example').DataTable();
+} );
+	</script>
 		<script type="text/javascript">
 			jQuery(function() {
 			jQuery('.starbox').each(function() {
@@ -69,6 +84,7 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 		</script>
 <!---//End-rate---->
 
+
 </head>
 <body>
 
@@ -77,7 +93,7 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 		<div class="container">
 			
 			<div class="logo">
-				<h1 ><a href="index.html"><b>T<br>H<br>E</b>Big Store<span>The Best Supermarket</span></a></h1>
+				<h1 ><a href="index.php"><b>T<br>H<br>E</b>Big Store<span>The Best Supermarket</span></a></h1>
 			</div>
 			<?php
 
@@ -103,42 +119,140 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
  <!--banner-->
 <div class="banner-top">
 	<div class="container">
-		<h3 >Login</h3>
-		<h4><a href="index.php">Home</a><label>/</label>Login</h4>
+		<h3 >Dashboard</h3>
+		<h4><a href="index.php">Home</a><label>/</label>Dashboard</h4>
 		<div class="clearfix"> </div>
 	</div>
 </div>
-<!--login-->
+<!--dash-->
+	<div class="check-out">	 
+		<div class="container">	 
+	 <div class="spec "><?php
 
-	<div class="login">
-	
-		<div class="main-agileits">
-			<?php
-			get_msg();
+			include 'temp/user_nav.php';
 			?>
-				<div class="form-w3agile">
-					<h3>Login</h3>
-					<form action="actions/login.php" method="post">
-						<div class="key">
-							<i class="fa fa-envelope" aria-hidden="true"></i>
-							<input  type="text" value="Email" name="email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Email';}}'>
-							<div class="clearfix"></div>
-						</div>
-						<div class="key">
-							<i class="fa fa-lock" aria-hidden="true"></i>
-							<input  type="password" value="Password" name="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}'>
-							<div class="clearfix"></div>
-						</div>
-						<input type="submit" value="Login">
-					</form>
-				</div>
-				<div class="forg">
-				<!-- 	<a href="forget.php" class="forg-left">Forgot Password</a> -->
-					<a href="register.php" class="forg-right">Register</a>
-				<div class="clearfix"></div>
-				</div>
+				<h3>Your Messages</h3>
+					<div class="ser-t">
+						<b></b>
+						<span><i></i></span>
+						<b class="line"></b>
+					</div>
 			</div>
-		</div>
+				
+			
+			  
+			   
+			   <?php
+			   	get_msg();
+			   ?>
+			   
+			   <br>
+			   <span class="notify"><?php
+			   get_msg();
+			   ?></span>
+			   <br>
+
+			   <table id="example" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Message</th>
+                <th>Date</th>
+                <th>On Ad</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+<?php
+$i=1;
+while($msg=fetch($res))
+{
+	$st="Received";
+	if($msg['m_status']=='read')
+	{
+		$show="Unread it";
+	}else
+	{
+		$show="Read It";
+	}
+	$act="<a href='actions/message_action.php?act=read&id=".$msg['m_id']."&st=".$msg['m_status']."'>".$show."</a>-<a href='#' data-toggle='modal' data-target='#myModal".$i."'>Reply</a>-<a href='actions/message_action.php?act=del&id=".$msg['m_id']."'>Delete</a>";
+	if($msg['m_from']==$_SESSION['u_id'])
+	{
+		$st="Sent";
+		$act="<a href='actions/message_action.php?act=del&id=".$msg['m_id']."'>Delete</a>";
+	}
+	$user=fetch(query("select * from users where u_id='{$msg['m_from']}'"));
+	$usto=fetch(query("select * from users where u_id='{$msg['m_to']}'"));
+	$ad=fetch(query("select * from ads where a_id='{$msg['m_on_ad']}'"));
+	echo "    <tr>
+                <td>".$i."</td>
+                <td>".$msg['m_msg']."</td>
+                <td>".$msg['m_date']."</td>
+                <td>".$ad['a_title']."</td>
+                <td>".$user['u_name']."</td>
+                <td>".$usto['u_name']."</td>
+                <td>".$st."</td>
+                
+                <td>".$act."</td>
+            </tr>";
+         echo '<div id="myModal'.$i.'" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Reply to '.$user['u_name'].'</h4>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="actions/send_msg.php">
+										   	<textarea class="form-control" name="msg">Your Message</textarea><br>
+										   	<input type="hidden" name="a_id" value="'.$ad['a_id'].'">
+										   	<input type="hidden" name="to" value="'.$msg['m_from'].'">
+										   		<input type="hidden" name="act" value="3">
+										   	<input class="btn btn-success" type="submit" value="Send">
+										   </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>';
+            $i++;
+}
+?>
+            
+        </tfoot>
+    </table>
+
+	<span class="notify"></span>
+		 
+		 </div>
+		 </div>
+
+		 				
+	<!--quantity-->
+			<script>
+
+			$('.value-plus').on('click', function(){
+				var divUpd = $(this).parent().find('.value'), newVal = parseInt(divUpd.text(), 10)+1;
+				divUpd.text(newVal);
+			});
+
+			$('.value-minus').on('click', function(){
+				var divUpd = $(this).parent().find('.value'), newVal = parseInt(divUpd.text(), 10)-1;
+				if(newVal>=1) divUpd.text(newVal);
+			});
+			</script>
+			<!--quantity-->
+
+
+	
 <!--footer-->
 <?php
 
@@ -149,14 +263,14 @@ include 'temp/footer.php';
 <!-- smooth scrolling -->
 	<script type="text/javascript">
 		$(document).ready(function() {
-		/*
+		
 			var defaults = {
 			containerID: 'toTop', // fading element id
 			containerHoverID: 'toTopHover', // fading element hover id
 			scrollSpeed: 1200,
 			easingType: 'linear' 
 			};
-		*/								
+										
 		$().UItoTop({ easingType: 'easeOutQuart' });
 		});
 	</script>
@@ -206,5 +320,14 @@ include 'temp/footer.php';
   });
   </script>
 
+
 </body>
 </html>
+
+<?php
+}else
+{
+	set_msg("Please Login First");
+	red("login.php");
+}
+?>

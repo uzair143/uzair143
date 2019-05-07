@@ -1,6 +1,9 @@
 <?php
 session_start();
-require 'actions/db.php'
+require 'actions/db.php';
+if(isset($_SESSION['is_login']))
+{
+	$res=query("select * from ads where u_id='{$_SESSION['u_id']}'");
 ?>
 
 <!--
@@ -12,7 +15,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <!DOCTYPE html>
 <html>
 <head>
-<title>Big store a Ecommerce Online Shopping Category Flat Bootstrap Responsive Website Template | Login :: w3layouts</title>
+<title>Big store a Ecommerce Online Shopping Category Flat Bootstrap Responsive Website Template | About :: w3layouts</title>
 <!-- for-mobile-apps -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -69,6 +72,7 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 		</script>
 <!---//End-rate---->
 
+
 </head>
 <body>
 
@@ -77,7 +81,7 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 		<div class="container">
 			
 			<div class="logo">
-				<h1 ><a href="index.html"><b>T<br>H<br>E</b>Big Store<span>The Best Supermarket</span></a></h1>
+				<h1 ><a href="index.php"><b>T<br>H<br>E</b>Big Store<span>The Best Supermarket</span></a></h1>
 			</div>
 			<?php
 
@@ -103,42 +107,160 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
  <!--banner-->
 <div class="banner-top">
 	<div class="container">
-		<h3 >Login</h3>
-		<h4><a href="index.php">Home</a><label>/</label>Login</h4>
+		<h3 >Dashboard</h3>
+		<h4><a href="index.php">Home</a><label>/</label>Dashboard</h4>
 		<div class="clearfix"> </div>
 	</div>
 </div>
-<!--login-->
+<!--dash-->
+	<div class="check-out">	 
+		<div class="container">	 
+	 <div class="spec "><?php
 
-	<div class="login">
-	
-		<div class="main-agileits">
-			<?php
-			get_msg();
+			include 'temp/user_nav.php';
 			?>
-				<div class="form-w3agile">
-					<h3>Login</h3>
-					<form action="actions/login.php" method="post">
-						<div class="key">
-							<i class="fa fa-envelope" aria-hidden="true"></i>
-							<input  type="text" value="Email" name="email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Email';}}'>
-							<div class="clearfix"></div>
-						</div>
-						<div class="key">
-							<i class="fa fa-lock" aria-hidden="true"></i>
-							<input  type="password" value="Password" name="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}'>
-							<div class="clearfix"></div>
-						</div>
-						<input type="submit" value="Login">
-					</form>
-				</div>
-				<div class="forg">
-				<!-- 	<a href="forget.php" class="forg-left">Forgot Password</a> -->
-					<a href="register.php" class="forg-right">Register</a>
-				<div class="clearfix"></div>
-				</div>
+				<h3>Your Ads</h3>
+					<div class="ser-t">
+						<b></b>
+						<span><i></i></span>
+						<b class="line"></b>
+					</div>
 			</div>
-		</div>
+				
+			
+			  
+			   <a href="new_ad.php" class="btn btn-info">Post New Ad</a>
+			   <?php
+			   	get_msg();
+			   ?>
+			   
+			   <br>
+			   <span class="notify"></span>
+			   <br>
+ <table class="table ">
+		  <tr>
+			<th class="t-head head-it ">Title</th>
+			<th class="t-head">Category</th>
+			<th class="t-head">Location</th>
+			<th class="t-head">Price</th>
+		<th class="t-head">Date of Post</th>
+
+			<th class="t-head">Action</th>
+		  </tr>
+		 <?php
+		 $i=1;
+		 while($ads=fetch($res))
+		 {
+		 	$msg=fetch(query("select count(*) as msg from msg where m_on_ad='{$ads['a_id']}' and m_status='unread'"));
+		 	if($msg['msg']>0)
+		 	{
+		 		$popup="<a href='chat.php'>".$msg['msg']." <span class='fa fa-comments'>unread</span></a>";
+
+		 	}else
+		 	{
+		 		$popup="";
+		 	}
+		 	$co=fetch(query("select * from countries where id='{$ads['country_id']}'"));
+		 	$st=fetch(query("select * from states where id='{$ads['state_id']}'"));
+		 	$ci=fetch(query("select * from cities where id='{$ads['city_id']}'"));
+		 	$loc=$co['name'].",".$st['name'].",".$ci['name'];
+		 	$cat=fetch(query("select c_name from cats where c_id='{$ads['c_id']}'"));
+
+		 	echo "<script>$(document).ready(function(c) {
+					$('.close".$i."').on('click', function(c){
+
+							$('.cross".$i."').fadeOut('slow', function(c){
+							$('.cross".$i."').remove();
+
+						});
+						});	  
+					});
+			   </script>";
+			   if($ads['a_status']=='active')
+			   {
+			   	$sh="De-Activate It";
+			   	$cls="danger";
+			   }else if($ads['a_status']=='inactive')
+			   {
+			   	$sh="Activate It";
+			   	$cls="info";
+			   }
+		 echo " <tr class='cross".$i."'>
+			<td class='ring-in t-data' >
+				<a href='a_detail.php?a_id=".$ads['a_id']."' class='at-in'>
+					<img src='uploads/".$ads['a_img']."' class='img-responsive' alt='".$ads['a_img']."'>
+				</a>
+			<div class='sed'>
+				<h5>".$ads['a_title']."</h5>
+			".$popup."
+			</div>
+				<div class='clearfix'></div>
+				<div class='close".$i."' title='Delete Adq' onclick='test(".$i.")'> <i class='fa fa-times' aria-hidden='true'></i></div>
+			 </td>
+			 <td class='t-data'>".$cat['c_name']."</td>
+			  <td class='t-data'>".$loc."</td>
+			<td class='t-data'>$".$ads['a_price'].".00</td>
+			<td class='t-data'>".$ads['a_date']."</td>
+			<!--<td class='t-data'><div class='quantity'> 
+								<div class='quantity-select'>            
+									<div class='entry value-minus'>&nbsp;</div>
+										<div class='entry value'><span class='span-1'>1</span></div>									
+									<div class='entry value-plus active'>&nbsp;</div>
+								</div>
+							</div>
+			
+			</td>-->
+			<input type='hidden' id='ad_id".$i."' value='".$ads['a_id']."'>
+			<td class='t-data t-w3l'><a class=' add-1' href='update.php?id=".$ads['a_id']."'>Update</a><br><br>
+			<a class='btn btn-".$cls."' href='actions/status.php?id=".$ads['a_id']."&st=".$ads['a_status']."'>".$sh."</a>
+
+			</td>
+			
+		  </tr>";
+		  $i++;
+		}
+		 ?>
+		  
+		  
+	</table>
+	<span class="notify"></span>
+		 
+		 </div>
+		 </div>
+
+		 				
+	<!--quantity-->
+			<script>
+
+				function test(tempData){
+					var cls=tempData;
+						var ad_id=$("#ad_id"+cls).val();
+					$.ajax({
+						data:{cls:ad_id},
+						type:"post",
+						url:"actions/del.php",
+						success:function(data)
+						{
+							$(".notify").html(data);
+						}
+					});
+
+					//
+				}
+			$('.value-plus').on('click', function(){
+				var divUpd = $(this).parent().find('.value'), newVal = parseInt(divUpd.text(), 10)+1;
+				divUpd.text(newVal);
+			});
+
+			$('.value-minus').on('click', function(){
+				var divUpd = $(this).parent().find('.value'), newVal = parseInt(divUpd.text(), 10)-1;
+				if(newVal>=1) divUpd.text(newVal);
+			});
+			</script>
+			<!--quantity-->
+
+
+	
 <!--footer-->
 <?php
 
@@ -149,14 +271,14 @@ include 'temp/footer.php';
 <!-- smooth scrolling -->
 	<script type="text/javascript">
 		$(document).ready(function() {
-		/*
+		
 			var defaults = {
 			containerID: 'toTop', // fading element id
 			containerHoverID: 'toTopHover', // fading element hover id
 			scrollSpeed: 1200,
 			easingType: 'linear' 
 			};
-		*/								
+										
 		$().UItoTop({ easingType: 'easeOutQuart' });
 		});
 	</script>
@@ -206,5 +328,14 @@ include 'temp/footer.php';
   });
   </script>
 
+
 </body>
 </html>
+
+<?php
+}else
+{
+	set_msg("Please Login First");
+	red("login.php");
+}
+?>

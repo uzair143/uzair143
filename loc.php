@@ -71,13 +71,12 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 <!---//End-rate---->
 <style>
 .abc{
-
+	
 	background-image:url('video/images.jpg');
 	background-repeat:no-repeat;
 	background-size: 100% 100%;
 	}
 </style>
-
 </head>
 <body>
 
@@ -95,7 +94,7 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 			
 			<div class="header-ri">
 				<ul class="social-top">
-					<li><a href="" class="icon facebook"><i class="fa fa-facebook" aria-hidden="true"></i><span></span></a></li>
+					<li><a href="#" class="icon facebook"><i class="fa fa-facebook" aria-hidden="true"></i><span></span></a></li>
 					<li><a href="#" class="icon twitter"><i class="fa fa-twitter" aria-hidden="true"></i><span></span></a></li>
 					<li><a href="#" class="icon pinterest"><i class="fa fa-pinterest-p" aria-hidden="true"></i><span></span></a></li>
 					<li><a href="#" class="icon dribbble"><i class="fa fa-dribbble" aria-hidden="true"></i><span></span></a></li>
@@ -112,11 +111,14 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 <div class="abc">
     <div class="container">
 		<div class="banner-info">
-			<h3>Search any Ad by any Keyword </h3>	
+			<h3>Search Ad by any Location Keyword </h3>	
 			<div class="search-form">
 				<form action="all.php" method="post">
-					<input type="text" placeholder="Search..." name="keyword">
-					<input type="submit" name="search" value="" style="position:absolute;" >
+					<input type="text" placeholder="Search..." name="keyword"><br>It is a<br>
+					<input type="radio" name="loc" value="countries" required="">Country&nbsp;&nbsp;
+					<input type="radio" name="loc" value="states" required="">State&nbsp;&nbsp;
+					<input type="radio" name="loc" value="cities" checked="" required="">City<br>
+					<input type="submit" name="search_loc" value="" >
 				</form>
 			</div>		
 		</div>	
@@ -209,7 +211,7 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
     <!-- </div> --><!-- /.carousel -->
  
 <!--content-->
-  <div class="product">
+	<div class="product">
 		<div class="container">
 			<div class="spec ">
 				<h3>Recent Ads</h3>
@@ -234,7 +236,7 @@ $i=1;
 									
 									<div class="mid-1">
 										<div class="women">
-											<h6><a href="#">'.$fetchh['a_title'].'</a></h6>							
+											<h6><a href="single.html">'.$fetchh['a_title'].'</a></h6>							
 										</div>
 										<div class="mid-2">
 											

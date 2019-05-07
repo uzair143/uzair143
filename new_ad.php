@@ -1,6 +1,13 @@
 <?php
 session_start();
-require 'actions/db.php'
+require 'actions/db.php';
+if(isset($_SESSION['is_login']))
+{
+	
+	$catsf=query("select * from cats");
+	$country=query("select * from countries");
+
+
 ?>
 
 <!--
@@ -12,7 +19,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <!DOCTYPE html>
 <html>
 <head>
-<title>Big store a Ecommerce Online Shopping Category Flat Bootstrap Responsive Website Template | Login :: w3layouts</title>
+<title>Big store a Ecommerce Online Shopping Category Flat Bootstrap Responsive Website Template | About :: w3layouts</title>
 <!-- for-mobile-apps -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -47,6 +54,7 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 <script src="js/jstarbox.js"></script>
 	<link rel="stylesheet" href="css/jstarbox.css" type="text/css" media="screen" charset="utf-8" />
 		<script type="text/javascript">
+
 			jQuery(function() {
 			jQuery('.starbox').each(function() {
 				var starbox = jQuery(this);
@@ -69,6 +77,7 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 		</script>
 <!---//End-rate---->
 
+
 </head>
 <body>
 
@@ -77,7 +86,7 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 		<div class="container">
 			
 			<div class="logo">
-				<h1 ><a href="index.html"><b>T<br>H<br>E</b>Big Store<span>The Best Supermarket</span></a></h1>
+				<h1 ><a href="index.php"><b>T<br>H<br>E</b>Big Store<span>The Best Supermarket</span></a></h1>
 			</div>
 			<?php
 
@@ -103,42 +112,118 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
  <!--banner-->
 <div class="banner-top">
 	<div class="container">
-		<h3 >Login</h3>
-		<h4><a href="index.php">Home</a><label>/</label>Login</h4>
+		<h3>New Ad</h3>
+		<h4><a href="index.php">Home</a><label>/</label>New Ad</h4>
 		<div class="clearfix"> </div>
 	</div>
 </div>
-<!--login-->
+<!--dash-->
+	<div class="check-out">	 
+		<div class="container">	 
+	 <div class="spec "><?php
 
-	<div class="login">
-	
-		<div class="main-agileits">
-			<?php
-			get_msg();
+			include 'temp/user_nav.php';
 			?>
-				<div class="form-w3agile">
-					<h3>Login</h3>
-					<form action="actions/login.php" method="post">
-						<div class="key">
-							<i class="fa fa-envelope" aria-hidden="true"></i>
-							<input  type="text" value="Email" name="email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Email';}}'>
-							<div class="clearfix"></div>
-						</div>
-						<div class="key">
-							<i class="fa fa-lock" aria-hidden="true"></i>
-							<input  type="password" value="Password" name="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}'>
-							<div class="clearfix"></div>
-						</div>
-						<input type="submit" value="Login">
-					</form>
-				</div>
-				<div class="forg">
-				<!-- 	<a href="forget.php" class="forg-left">Forgot Password</a> -->
-					<a href="register.php" class="forg-right">Register</a>
-				<div class="clearfix"></div>
-				</div>
+				<h3>Specify Your Ad</h3>
+					<div class="ser-t">
+						<b></b>
+						<span><i></i></span>
+						<b class="line"></b>
+					</div>
 			</div>
-		</div>
+				<form action="actions/post_ad.php" enctype="multipart/form-data" method="post"><?php
+			   	get_msg();
+			   ?>
+						 <div class="form-group">
+						  <label for="sel1">Select Catagory :</label>
+						  <select class="form-control" name="cat" id="sel1">
+						    
+						    <?php
+						    while($catf=fetch($catsf))
+						    {
+						    echo "<option value='".$catf['c_id']."'>".$catf['c_name']."</option>";
+						    }
+						    ?>
+						  </select>
+						</div>
+						 <div class="form-group">
+						  <label for="country">Select Country :</label>
+						  <select class="form-control" name="country" id="country">
+						    
+						    <?php
+						    while($co=fetch($country))
+						    {
+						    echo "<option value='".$co['id']."'>".$co['name']."</option>";
+						    }
+						    ?>
+						  </select>
+						
+						</div> 
+						 <div class="form-group">
+						  <label for="state">Select State :</label>
+						  <select class="form-control" name="state" id="state">
+						    
+						  <option>Select State</option>
+						  </select>
+						
+						</div> 
+						 <div class="form-group">
+						  <label for="city">Select City :</label>
+						  <select class="form-control" name="city" id="city">
+						    
+						   <option>Select City</option>
+						  </select>
+						
+						</div> 
+						
+						<div class="form-group">
+						  <label for="usr">Title:</label>
+						  <input type="text" name="title" class="form-control" id="usr">
+						</div>
+						 <div class="form-group">
+						  <label for="comment">Your Ad Description</label>
+						  <textarea class="form-control" name="desc" rows="5" id="comment"></textarea>
+						</div> 
+						<div class="input-group">
+						  <span class="input-group-addon">$</span>
+						  <input type="text" name="price" class="form-control" aria-label="Amount (to the nearest dollar)">
+						  <span class="input-group-addon">.00</span>
+						</div>
+						
+						<div class="form-group">
+							<label for="usr">Select Image:</label>
+						      <label class="btn btn-default btn-file">
+      						   <input type="file" name="img" style="display: block;">
+  							  </label>
+  						</div>
+						  
+						
+						
+						
+						<input class="btn btn-info" type="submit" value="Post Your Ad">
+						<input class="btn btn-warning" type="reset" value="Reset Form" name="">
+
+					</form>
+ 
+		 </div>
+		 </div>
+		 				
+	<!--quantity-->
+			<script>
+			$('.value-plus').on('click', function(){
+				var divUpd = $(this).parent().find('.value'), newVal = parseInt(divUpd.text(), 10)+1;
+				divUpd.text(newVal);
+			});
+
+			$('.value-minus').on('click', function(){
+				var divUpd = $(this).parent().find('.value'), newVal = parseInt(divUpd.text(), 10)-1;
+				if(newVal>=1) divUpd.text(newVal);
+			});
+			</script>
+			<!--quantity-->
+
+
+	
 <!--footer-->
 <?php
 
@@ -149,14 +234,41 @@ include 'temp/footer.php';
 <!-- smooth scrolling -->
 	<script type="text/javascript">
 		$(document).ready(function() {
-		/*
+			
+			$("#country").change(function(){
+
+				var co_id=$(this).val();
+				$.ajax({
+					data:{c_id:co_id},
+					type:"post",
+					url:"actions/get_state.php",
+					success:function(data){
+						$("#state").html(data);
+					}
+
+				});
+			});
+			$("#state").change(function(){
+
+				var co_id=$(this).val();
+				$.ajax({
+					data:{s_id:co_id},
+					type:"post",
+					url:"actions/get_city.php",
+					success:function(data){
+						$("#city").html(data);
+					}
+
+				});
+			});
+		
 			var defaults = {
 			containerID: 'toTop', // fading element id
 			containerHoverID: 'toTopHover', // fading element hover id
 			scrollSpeed: 1200,
 			easingType: 'linear' 
 			};
-		*/								
+										
 		$().UItoTop({ easingType: 'easeOutQuart' });
 		});
 	</script>
@@ -206,5 +318,14 @@ include 'temp/footer.php';
   });
   </script>
 
+
 </body>
 </html>
+
+<?php
+}else
+{
+	set_msg("Please Login First");
+	red("login.php");
+}
+?>

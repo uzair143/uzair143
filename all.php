@@ -2,8 +2,81 @@
 
 session_start();
 require 'actions/db.php';
-$sel=query("select * from ads order by a_id desc limit 4");
 
+if(isset($_POST['search']))
+{
+	$keywords=mysqli_real_escape_string($link,$_POST['keyword']);
+	
+	 $sql="select * from ads where a_status='active' and a_banned=1 and a_title like '%$keywords%'";
+		
+
+
+}else if(isset($_POST['search_loc'])){
+
+	$keywords=mysqli_real_escape_string($link,$_POST['keyword']);
+	$tbl=mysqli_real_escape_string($link,$_POST['loc']);
+	 $sqlo="select * from $tbl where name like '%$keywords%'";
+	$r=query($sqlo);
+	if($tbl=='cities')
+	{
+		$id="city_id";
+	}else if($tbl=='countries')
+	{
+		$id="country_id";
+	}else if($tbl=='states')
+	{
+		$id="state_id";
+	}
+	$sql="select * from ads where a_status='active' and a_banned=1 and ( ";
+	
+	 $total=mysqli_num_rows($r);
+		if($total>0)
+		{
+						$i=0;
+				$whr='';
+				while($loc=fetch($r))
+				{
+					$i++;
+					if($i==$total)
+					{
+						$whr.="$id='{$loc['id']}')";
+					}else
+					{
+						$whr.="$id='{$loc['id']}' or ";
+
+					}
+					
+				}
+				$sql.=$whr;
+			}else
+			{
+				$sql="select * from ads where a_id<0";
+			}
+	
+	
+}
+else
+{
+	$keywords="";
+	$sql="select * from ads";
+	if(isset($_GET['cat']))
+	{
+		$sql.=" where c_id='{$_GET['cat']}' and a_status='active' and a_banned=1";
+	}else{
+		$sql.=" where a_status='active' and a_banned=1";
+	}
+	
+}
+
+ $sql.=" order by a_id desc";
+
+//echo $sql;
+
+$sel=query($sql);
+if(mysqli_num_rows($sel)==0)
+{
+	$no="No Ads Found According to Your Search keyword '<b>$keywords</b>'";
+}
 ?><!--
 Author: W3layouts
 Author URL: http://w3layouts.com
@@ -69,14 +142,6 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 		});
 		</script>
 <!---//End-rate---->
-<style>
-.abc{
-
-	background-image:url('video/images.jpg');
-	background-repeat:no-repeat;
-	background-size: 100% 100%;
-	}
-</style>
 
 </head>
 <body>
@@ -95,7 +160,7 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 			
 			<div class="header-ri">
 				<ul class="social-top">
-					<li><a href="" class="icon facebook"><i class="fa fa-facebook" aria-hidden="true"></i><span></span></a></li>
+					<li><a href="#" class="icon facebook"><i class="fa fa-facebook" aria-hidden="true"></i><span></span></a></li>
 					<li><a href="#" class="icon twitter"><i class="fa fa-twitter" aria-hidden="true"></i><span></span></a></li>
 					<li><a href="#" class="icon pinterest"><i class="fa fa-pinterest-p" aria-hidden="true"></i><span></span></a></li>
 					<li><a href="#" class="icon dribbble"><i class="fa fa-dribbble" aria-hidden="true"></i><span></span></a></li>
@@ -109,19 +174,20 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 	?>						
 </div>
   <!---->
-<div class="abc">
+<!-- <div data-vide-bg="video/video">
     <div class="container">
 		<div class="banner-info">
-			<h3>Search any Ad by any Keyword </h3>	
+			<h3>It is a long established fact that a reader will be distracted by 
+			the readable </h3>	
 			<div class="search-form">
-				<form action="all.php" method="post">
-					<input type="text" placeholder="Search..." name="keyword">
-					<input type="submit" name="search" value="" style="position:absolute;" >
+				<form action="#" method="post">
+					<input type="text" placeholder="Search..." name="Search...">
+					<input type="submit" value=" " >
 				</form>
 			</div>		
 		</div>	
     </div>
-</div>
+</div> -->
 
     <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.1.min.js"><\/script>')</script>
     <script src="js/jquery.vide.min.js"></script>
@@ -209,10 +275,17 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
     <!-- </div> --><!-- /.carousel -->
  
 <!--content-->
-  <div class="product">
+	<div class="product">
 		<div class="container">
 			<div class="spec ">
-				<h3>Recent Ads</h3>
+				<h3><?php   
+				if(!isset($_GET['query']))
+					{
+						$show="All";
+
+					}
+					echo $show;
+				?> Ads</h3>
 				<div class="ser-t">
 					<b></b>
 					<span><i></i></span>
@@ -220,7 +293,10 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 				</div>
 			</div>
 				<div class=" con-w3l">
-							
+							<?php
+							if(isset($no))
+							echo $no;
+							?>
 				<?php
 
 $i=1;
@@ -234,19 +310,22 @@ $i=1;
 									
 									<div class="mid-1">
 										<div class="women">
-											<h6><a href="#">'.$fetchh['a_title'].'</a></h6>							
+											<a href="a_detail.php?a_id='.$fetchh['a_id'].'" ><h6>'.$fetchh['a_title'].'</h6></a>				
 										</div>
+
 										<div class="mid-2">
 											
 											  <div class="block">
 											<!--	<div class="starbox small ghosting"> </div>-->
+
+											<span class="reducedfrom" style="color:orange">Price:$'.$fetchh['a_price'].'</span>
 											</div>
 											<div class="clearfix"></div>
 										</div>
-											
-									</div>
+										
+									</div></a>
 								</div>
-							</div></a>';
+							</div>';
 								echo '<div class="modal fade" id="myModal'.$i.'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content modal-info">
@@ -261,12 +340,15 @@ $i=1;
 								</div>
 								<div class="col-md-7 span-1 ">
 									<h3>'.$fetchh['a_title'].'</h3>
-									
+
 									<div class="price_single">
 									  <span class="reducedfrom ">$'.$fetchh['a_price'].'</span>
 									
 									 <div class="clearfix"></div>
-									</div>
+										</div>
+																		<div>
+									Posted on:'.$fetchh['a_date'].'
+									</div>									
 									
 									 <div class="add-to">
 										   <a href="a_detail.php?a_id='.$fetchh['a_id'].'" class="btn btn-info " >Show Details</a>
